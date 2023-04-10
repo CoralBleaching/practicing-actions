@@ -43,29 +43,29 @@ jobs:
       working-directory: ${{github.workspace}}/install/
       run:  cmake -E tar ${{ matrix.config.compression_method }} ../${{ matrix.config.artifact }} .
 
-    - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1.1.4
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-    # - uses: "marvinpinto/action-automatic-releases@latest"
-    #   with:
-    #     repo_token: "${{ secrets.GITHUB_TOKEN }}"
-    #     automatic_release_tag: "latest"
-    #     prerelease: true
-    #     title: "Development Build"
-    #     files: ./${{ matrix.config.artifact }}
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1.0.2
-      env:
-        GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+    # - name: Create Release
+    #     id: create_release
+    #     uses: actions/create-release@v1.1.4
+    #     env:
+    #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #     with:
+    #       tag_name: ${{ github.ref }}
+    #       release_name: Release ${{ github.ref }}
+    #       draft: false
+    #       prerelease: false
+    - uses: "marvinpinto/action-automatic-releases@latest"
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ matrix.config.artifact }}
-        asset_name: ${{ matrix.config.artifact }}
-        asset_content_type: application/${{ matrix.config.app_type }}
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "latest"
+        prerelease: true
+        title: "Development Build"
+        files: ./${{ matrix.config.artifact }}
+    # - name: Upload Release Asset
+    #   uses: actions/upload-release-asset@v1.0.2
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+    #   with:
+    #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+    #     asset_path: ${{ matrix.config.artifact }}
+    #     asset_name: ${{ matrix.config.artifact }}
+    #     asset_content_type: application/${{ matrix.config.app_type }}
