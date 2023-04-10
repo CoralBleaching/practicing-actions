@@ -40,13 +40,20 @@ jobs:
       run: cmake --install build --prefix ${{github.workspace}}/install/ --strip
 
     - name: Pack release
-      working-directory: ${{github.workspace}}/install/
+      if: matrix.config.os == 'windows-latest'
+      working-directory: ${{github.workspace}}/install
+      run: |
+        dir | echo
+        cmake -E tar ${{ matrix.config.compression_method }} ../../${{ matrix.config.artifact }} .
+
+    - name: Pack release
+      if: matrix.config.os == 'ubuntu-latest'
+      working-directory: ${{github.workspace}}/install
       run:  cmake -E tar ${{ matrix.config.compression_method }} ../${{ matrix.config.artifact }} .
 
     - uses: "marvinpinto/action-automatic-releases@latest"
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        prerelease: false
-        automatic_release_tag: "${{ matrix.config.os }} ${{ github.ref_name }}"
+        automatic_release_tag: "${{ matrix.config.os }}-${{ github.ref_name }}"
         title: "${{ matrix.config.os }} ${{ github.ref_name}}"
         files: ./${{ matrix.config.artifact }}
