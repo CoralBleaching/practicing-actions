@@ -11,20 +11,18 @@ jobs:
       matrix:
         config:
         - {
-          artifact: "hello_world.zip",
+          artifact: "hello_world.tar.gz",
           compression_method: "czfv",
           name: "Windows Latest MSVC",
           os: windows-latest,
-          platform: "windows",
-          app_type: zip
+          platform: "windows"
         }
         - {
         name: "Ubuntu Latest GCC",
         os: ubuntu-latest,
         platform: "ubuntu",
         compression_method: "cJfv",
-        artifact: "hello_world.tar.xz",
-        app_type: x-xz
+        artifact: "hello_world.tar.xz"
         }
     
     steps:
@@ -40,16 +38,10 @@ jobs:
       run: cmake --install build --prefix ${{github.workspace}}/install/ --strip
 
     - name: Pack release
-      if: matrix.config.os == 'windows-latest'
       working-directory: ${{github.workspace}}/install
       run: |
-        dir | echo
-        cmake -E tar ${{ matrix.config.compression_method }} ../../${{ matrix.config.artifact }} .
-
-    - name: Pack release
-      if: matrix.config.os == 'ubuntu-latest'
-      working-directory: ${{github.workspace}}/install
-      run:  cmake -E tar ${{ matrix.config.compression_method }} ../${{ matrix.config.artifact }} .
+        ls | echo
+        cmake -E tar ${{ matrix.config.compression_method }} ../${{ matrix.config.artifact }} $(find . -type f -printf '%f\n')
 
     - uses: "marvinpinto/action-automatic-releases@latest"
       with:
